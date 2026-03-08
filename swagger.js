@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:5001"
+        url: "https://menu-service--imeshi.replit.app"
       }
     ]
   },
