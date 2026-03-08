@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://menu-service--imeshi.replit.app"
+        url: "https://menu-service-production-048a.up.railway.app"
       }
     ]
   },
