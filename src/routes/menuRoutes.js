@@ -39,6 +39,8 @@ const controller = require("../controllers/menuController");
  *                 type: number
  *               isAvailable:
  *                 type: boolean
+ *               vegan:
+ *                 type: boolean
  *               imageUrl:
  *                 type: string
  *     responses:
@@ -66,11 +68,45 @@ router.post("/items", controller.createMenuItem);
  *         name: isAvailable
  *         schema:
  *           type: boolean
+ *       - in: query
+ *         name: vegan
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: List of menu items
  */
 router.get("/items", controller.getAllMenuItems);
+
+/**
+ * @swagger
+ * /menu/personalized/{userId}:
+ *   get:
+ *     summary: Get personalized menu based on user vegan preference
+ *     tags: [Menu]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Personalized menu returned successfully
+ */
+router.get("/personalized/:userId", controller.getPersonalizedMenu);
+
+/**
+ * @swagger
+ * /menu/integrations/status:
+ *   get:
+ *     summary: Check connectivity with external microservices
+ *     tags: [Menu]
+ *     responses:
+ *       200:
+ *         description: Integration status returned successfully
+ */
+router.get("/integrations/status", controller.getIntegrationStatus);
 
 /**
  * @swagger
@@ -104,6 +140,29 @@ router.get("/items/:id", controller.getMenuItemById);
  *         required: true
  *         schema:
  *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurantId:
+ *                 type: integer
+ *               categoryId:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               isAvailable:
+ *                 type: boolean
+ *               vegan:
+ *                 type: boolean
+ *               imageUrl:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Menu item updated

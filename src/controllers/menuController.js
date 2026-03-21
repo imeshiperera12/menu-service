@@ -1,4 +1,5 @@
 const menuService = require("../services/menuService");
+const externalService = require("../services/externalService");
 
 exports.createMenuItem = (req, res) => {
   const { restaurantId, categoryId, name, price } = req.body;
@@ -118,6 +119,7 @@ exports.validateItemsForOrder = (req, res) => {
       name: row.name,
       quantity: requestedMap.get(row.id),
       currentPrice: row.price,
+      vegan: !!row.vegan,
       isAvailable: !!row.isAvailable
     }));
 
@@ -155,4 +157,51 @@ exports.getRestaurants = (req, res) => {
       data: rows
     });
   });
+};
+
+exports.getPersonalizedMenu = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const userInfo = await externalService.getUserPreference(userId);
+
+    menuService.getAllMenuItems({}, (err, rows) => {
+      if (err) {
+        return res.status(500).json({ success: false, error: err.message });
+      }
+
+      const filtered = rows.filter((item) => !!item.vegan === !!userInfo.vegan);
+
+      res.json({
+        success: true,
+        userId,
+        detectedVeganPreference: userInfo.vegan,
+        totalItems: filtered.length,
+        data: filtered
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch personalized menu",
+      error: error.message
+    });
+  }
+};
+
+exports.getIntegrationStatus = async (req, res) => {
+  try {
+    const services = await externalService.getIntegrationStatus();
+
+    res.json({
+      success: true,
+      message: "Integration status fetched successfully",
+      services
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch integration status",
+      error: error.message
+    });
+  }
 };

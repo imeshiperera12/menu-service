@@ -35,6 +35,7 @@ db.serialize(() => {
       description TEXT,
       price REAL NOT NULL,
       isAvailable INTEGER DEFAULT 1,
+      vegan INTEGER DEFAULT 0,
       imageUrl TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -42,6 +43,16 @@ db.serialize(() => {
       FOREIGN KEY (categoryId) REFERENCES categories(id)
     )
   `);
+
+  // add vegan column if DB already exists without it
+  db.all(`PRAGMA table_info(menu_items)`, (err, rows) => {
+    if (!err) {
+      const hasVegan = rows.some((col) => col.name === "vegan");
+      if (!hasVegan) {
+        db.run(`ALTER TABLE menu_items ADD COLUMN vegan INTEGER DEFAULT 0`);
+      }
+    }
+  });
 
   db.run(`
     INSERT OR IGNORE INTO categories (id, name) VALUES

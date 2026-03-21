@@ -8,13 +8,14 @@ exports.createMenuItem = (item, callback) => {
     description,
     price,
     isAvailable,
+    vegan,
     imageUrl
   } = item;
 
   db.run(
     `INSERT INTO menu_items
-    (restaurantId, categoryId, name, description, price, isAvailable, imageUrl)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    (restaurantId, categoryId, name, description, price, isAvailable, vegan, imageUrl)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       restaurantId,
       categoryId,
@@ -22,6 +23,7 @@ exports.createMenuItem = (item, callback) => {
       description,
       price,
       isAvailable ? 1 : 0,
+      vegan ? 1 : 0,
       imageUrl || null
     ],
     function (err) {
@@ -38,6 +40,7 @@ exports.getAllMenuItems = (filters, callback) => {
       m.description,
       m.price,
       m.isAvailable,
+      m.vegan,
       m.imageUrl,
       m.restaurantId,
       r.name AS restaurantName,
@@ -68,6 +71,11 @@ exports.getAllMenuItems = (filters, callback) => {
     params.push(filters.isAvailable === "true" ? 1 : 0);
   }
 
+  if (filters.vegan !== undefined) {
+    query += ` AND m.vegan = ?`;
+    params.push(filters.vegan === "true" ? 1 : 0);
+  }
+
   query += ` ORDER BY m.id DESC`;
 
   db.all(query, params, callback);
@@ -82,6 +90,7 @@ exports.getMenuItemById = (id, callback) => {
       m.description,
       m.price,
       m.isAvailable,
+      m.vegan,
       m.imageUrl,
       m.restaurantId,
       r.name AS restaurantName,
@@ -107,6 +116,7 @@ exports.updateMenuItem = (id, item, callback) => {
     description,
     price,
     isAvailable,
+    vegan,
     imageUrl
   } = item;
 
@@ -118,6 +128,7 @@ exports.updateMenuItem = (id, item, callback) => {
          description = ?,
          price = ?,
          isAvailable = ?,
+         vegan = ?,
          imageUrl = ?,
          updatedAt = CURRENT_TIMESTAMP
      WHERE id = ?`,
@@ -128,6 +139,7 @@ exports.updateMenuItem = (id, item, callback) => {
       description,
       price,
       isAvailable ? 1 : 0,
+      vegan ? 1 : 0,
       imageUrl || null,
       id
     ],
@@ -153,7 +165,7 @@ exports.validateItemsForOrder = (items, callback) => {
 
   db.all(
     `
-    SELECT id, name, price, isAvailable
+    SELECT id, name, price, isAvailable, vegan
     FROM menu_items
     WHERE id IN (${placeholders})
     `,
