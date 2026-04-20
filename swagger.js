@@ -6,7 +6,7 @@ const options = {
     info: {
       title: "Menu & Catalog Service API",
       version: "1.0.0",
-      description: "API documentation for Menu & Catalog Microservice"
+      description: "API documentation for Menu & Catalog MicroService"
     },
     servers: [
       {
