@@ -10,7 +10,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://menu-service-production-048a.up.railway.app"
+        url: "https://menu-service-44hs.onrender.com"
       }
     ]
   },
